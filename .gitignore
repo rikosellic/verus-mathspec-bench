@@ -1,1 +1,8 @@
-/target
+target/
+.verus-log/
+.vscode/settings.json
+.idea/
+test
+lib.*.txt
+lib
+Cargo.lock
