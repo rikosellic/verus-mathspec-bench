@@ -11,6 +11,14 @@ pub trait LT where Self: Sized {
     spec fn lt(self, rhs: Self) -> bool;
 }
 
+pub trait Max where Self: Sized {
+    spec fn max(self, rhs: Self) -> Self;
+}
+
+pub trait Min where Self: Sized {
+    spec fn min(self, rhs: Self) -> Self;
+}
+
 /// Corresponds to Lean's `class Preorder (α : Type*) extends LE α, LT α`.
 /// A preorder is a reflexive, transitive relation `le` with `lt` defined in the obvious way.
 pub trait PreOrder: LE + LT where Self: Sized {
