@@ -2,6 +2,7 @@ target/
 .verus-log/
 .vscode/settings.json
 .idea/
+tools/
 test
 lib.*.txt
 lib

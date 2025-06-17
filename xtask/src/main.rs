@@ -104,7 +104,6 @@ where
 }
 
 #[memoize]
-#[allow(unused)]
 fn get_verus() -> PathBuf {
     let hints = vec![PathBuf::from("tools/verus/source/target-verus/release")];
     locate(get_platform_specific_binary_name("verus"), Some("VERUS_PATH"), hints)
@@ -114,7 +113,6 @@ fn get_verus() -> PathBuf {
     })
 }
 
-#[allow(unused)]
 fn get_z3() -> PathBuf {
     let hints = vec![PathBuf::from("tools/verus/source")];
     locate(get_platform_specific_binary_name("z3"), Some("VERUS_Z3_PATH"), hints)
@@ -133,6 +131,7 @@ fn cargo_install(name: &str) {
         .expect("Failed to install cargo package");
 }
 
+#[allow(unused)]
 #[memoize]
 fn get_rustfilt() -> PathBuf {
     let rustfilt = locate(
@@ -151,6 +150,7 @@ fn get_rustfilt() -> PathBuf {
     .expect("Failed to find or install rustfilt")
 }
 
+#[allow(unused)]
 #[memoize]
 fn get_objdump() -> PathBuf {
     if std::env::var("LLVM_OBJDUMP").is_ok() {
@@ -235,6 +235,7 @@ struct UpdateArgs {
 struct VerifyArgs {
     #[arg(short = 't', long = "targets", value_parser = target_parser,
         help = "The targets to verify", num_args = 0..,
+        default_value = "benchmark",
         action = ArgAction::Append)]
     targets: Vec<String>,
 
@@ -328,7 +329,6 @@ fn target_parser(s: &str) -> Result<String, String> {
 
 type DynError = Box<dyn std::error::Error>;
 
-#[allow(unused)]
 fn crate_type(target: &str) -> (PathBuf, &str) {
     let target_root = Path::new(&target).join("src");
     if target_root.join("lib.rs").is_file() {
@@ -338,7 +338,6 @@ fn crate_type(target: &str) -> (PathBuf, &str) {
     }
 }
 
-#[allow(unused)]
 fn binary_suffix(crate_type: &str) -> &str {
     match crate_type {
         "lib" => "rlib",
@@ -347,7 +346,6 @@ fn binary_suffix(crate_type: &str) -> &str {
     }
 }
 
-#[allow(unused)]
 fn binary_prefix(crate_type: &str) -> &str {
     match crate_type {
         "lib" => "lib",
@@ -356,7 +354,6 @@ fn binary_prefix(crate_type: &str) -> &str {
     }
 }
 
-#[allow(unused)]
 fn verus_data(target: &str) -> PathBuf {
     let target_verus = Path::new("target").join(format!("{}.verusdata", target));
     if target_verus.is_file() {
@@ -366,7 +363,6 @@ fn verus_data(target: &str) -> PathBuf {
     }
 }
 
-#[allow(unused)]
 fn verus_library(target: &str) -> PathBuf {
     let (_, crate_type) = crate_type(target);
     let output = format!(
@@ -383,7 +379,6 @@ fn verus_library(target: &str) -> PathBuf {
     }
 }
 
-#[allow(unused)]
 fn push_imports(cmd: &mut Command, imports: Vec<&str>) {
     for import in imports {
         cmd.arg("--import")
@@ -412,7 +407,7 @@ lazy_static! {
     };
 }
 
-#[allow(unused)]
+
 fn path_simplify(path: PathBuf) -> PathBuf {
     path.canonicalize()
         .unwrap_or_else(|_| PathBuf::from(path))
@@ -421,7 +416,6 @@ fn path_simplify(path: PathBuf) -> PathBuf {
         .into()
 }
 
-#[allow(unused)]
 fn get_dependency(target: &String) -> Vec<(String, PathBuf)> {
     let toml = Path::new(&target).join("Cargo.toml");
     let content =
@@ -456,17 +450,6 @@ fn get_dependency(target: &String) -> Vec<(String, PathBuf)> {
     deps
 }
 
-fn exec_cargo_verify() -> Result<(), DynError> {
-    let mut cargo_cmd = Command::new("cargo");
-    cargo_cmd
-        .current_dir(Path::new("benchmark"))
-        .arg("verus")
-        .arg("verify");
-    cargo_cmd.status()?;
-    Ok(())
-}
-
-#[allow(unused)]
 fn exec_verify(args: &VerifyArgs) -> Result<(), DynError> {
     let targets = &args.targets;
     let verus = get_verus();
@@ -765,7 +748,6 @@ fn apply_patch(dir: &Path, patch: &Path) -> bool {
     status.success()
 }
 
-#[allow(unused)]
 fn is_verusfmt_installed() -> bool {
     let output = Command::new("verusfmt").arg("--version").output();
     match output {
@@ -779,7 +761,6 @@ fn is_verusfmt_installed() -> bool {
     false
 }
 
-#[allow(unused)]
 fn install_verusfmt() -> Result<(), DynError> {
     println!("Start to install verusfmt");
     let status = {
@@ -813,7 +794,6 @@ fn install_verusfmt() -> Result<(), DynError> {
     Ok(())
 }
 
-#[allow(unused)]
 fn compile_verus() -> Result<(), DynError> {
     println!("Start to build the Verus compiler");
     #[cfg(target_os = "windows")]
@@ -837,7 +817,6 @@ fn compile_verus() -> Result<(), DynError> {
     Ok(())
 }
 
-#[allow(unused)]
 fn exec_bootstrap(args: &BootstrapArgs) -> Result<(), DynError> {
     let verus_repo = "https://github.com/asterinas/verus.git";
     let verus_dir = Path::new("tools").join("verus");
@@ -907,13 +886,6 @@ fn exec_bootstrap(args: &BootstrapArgs) -> Result<(), DynError> {
         }
     }
 
-    /*let verus_path = Path::new("..").join("patches").join("verus-fixes.patch");
-    // Not required if the project includes fixed Verus code
-    if !is_patch_applied(&verus_dir, &verus_path) {
-        println!("Apply the Verus patch");
-        apply_patch(&verus_dir, &verus_path);
-    }*/
-
     compile_verus()?;
 
     if args.restart || !is_verusfmt_installed() {
@@ -923,7 +895,6 @@ fn exec_bootstrap(args: &BootstrapArgs) -> Result<(), DynError> {
     Ok(())
 }
 
-#[allow(unused)]
 fn exec_update(args: &UpdateArgs) -> Result<(), DynError> {
     if !args.no_verus {
         let verus_dir = Path::new("tools").join("verus");
@@ -1023,13 +994,13 @@ fn exec_fmt() -> Result<(), DynError> {
 fn main() {
     let cli = Cli::parse();
     if let Err(e) = match &cli.command {
-        Commands::Verify(_) => exec_cargo_verify(),
+        Commands::Verify(args) => exec_verify(args),
         //Commands::Doc(args) => exec_doc(args),
-        Commands::Bootstrap(_) => install_verusfmt(),
+        Commands::Bootstrap(args) => exec_bootstrap(args),
         //Commands::Compile(args) => exec_compile(args),
+        Commands::Update(args) => exec_update(args),
         Commands::Fmt => exec_fmt(),
         _ => Ok(()),
-        //Commands::Update(args) => exec_update(args),
     } {
         eprintln!("Error: {}", e);
         std::process::exit(1);

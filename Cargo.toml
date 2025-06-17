@@ -1,7 +1,6 @@
 [workspace]
 members = [
     "benchmark",
-    "xtask"
 ]
-exclude = []
+exclude = ["xtask", "tools/verus"]
 resolver = "2"
