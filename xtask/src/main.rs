@@ -407,7 +407,6 @@ lazy_static! {
     };
 }
 
-
 fn path_simplify(path: PathBuf) -> PathBuf {
     path.canonicalize()
         .unwrap_or_else(|_| PathBuf::from(path))

@@ -1010,7 +1010,186 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
 /// Corresponds to Lean's `class Lattice (α : Type u)`.
 /// A lattice is a join-semilattice which is also a meet-semilattice.
 pub trait Lattice: SemilatticeSup + SemilatticeInf where Self: Sized {
+    proof fn lemma_inf_le_sup(a: Self, b: Self)
+        ensures
+            a.inf(b).le(a.sup(b)),
+    {
+        Self::lemma_inf_le_left();
+        Self::lemma_le_sup_left();
+        Self::lemma_le_trans();
 
+        assert(a.inf(b).le(a));
+        assert(a.le(a.sup(b)));
+        assert(a.inf(b).le(a.sup(b)));
+    }
+
+    proof fn lemma_sup_le_inf(a: Self, b: Self)
+        ensures
+            a.sup(b).le(a.inf(b)) <==> (a == b),
+    {
+        Self::lemma_le_sup_left();
+        Self::lemma_le_sup_right();
+        Self::lemma_inf_le_left();
+        Self::lemma_inf_le_right();
+        Self::lemma_le_trans();
+        Self::lemma_le_antisymm();
+        Self::lemma_sup_idem(a);
+        Self::lemma_inf_idem(a);
+
+        if a.sup(b).le(a.inf(b)) {
+            assert(a.le(a.sup(b)));
+            assert(a.inf(b).le(b));
+            assert(a.le(b));
+
+            assert(b.le(a.sup(b)));
+            assert(a.inf(b).le(a));
+            assert(b.le(a));
+
+            assert(a == b);
+        }
+    }
+
+    proof fn lemma_inf_eq_sup(a: Self, b: Self)
+        ensures
+            (a.inf(b) == a.sup(b)) <==> (a == b),
+    {
+        Self::lemma_inf_le_sup(a, b);
+        Self::lemma_sup_le_inf(a, b);
+        Self::lemma_le_antisymm();
+    }
+
+    proof fn lemma_sup_eq_inf(a: Self, b: Self)
+        ensures
+            (a.sup(b) == a.inf(b)) <==> (a == b),
+    {
+        Self::lemma_inf_eq_sup(a, b);
+    }
+
+    proof fn lemma_inf_lt_sup(a: Self, b: Self)
+        ensures
+            a.inf(b).lt(a.sup(b)) <==> (a != b),
+    {
+        Self::lemma_inf_le_sup(a, b);
+        Self::lemma_inf_eq_sup(a, b);
+        Self::lemma_lt_iff_le_not_le();
+        Self::lemma_le_antisymm();
+    }
+
+    proof fn lemma_inf_eq_and_sup_eq_iff(a: Self, b: Self, c: Self)
+        ensures
+            (a.inf(b) == c && a.sup(b) == c) <==> (a == c && b == c),
+    {
+        Self::lemma_sup_eq_inf(a, b);
+        Self::lemma_inf_idem(a);
+        Self::lemma_inf_idem(b);
+        Self::lemma_inf_idem(c);
+        Self::lemma_sup_idem(a);
+        Self::lemma_sup_idem(b);
+        Self::lemma_sup_idem(c);
+    }
+
+    proof fn lemma_sup_inf_le(a: Self, b: Self, c: Self)
+        ensures
+            a.sup(b.inf(c)).le(a.sup(b).inf(a.sup(c))),
+    {
+        Self::lemma_le_inf();
+        Self::lemma_inf_le_left();
+        Self::lemma_inf_le_right();
+        Self::lemma_sup_le_sup_left(b.inf(c), b, a);
+        Self::lemma_sup_le_sup_left(b.inf(c), c, a);
+
+        assert(a.sup(b.inf(c)).le(a.sup(b))) by {
+            assert(b.inf(c).le(b)) by {
+                Self::lemma_inf_le_left();
+            };
+            Self::lemma_sup_le_sup_left(b.inf(c), b, a);
+        };
+
+        assert(a.sup(b.inf(c)).le(a.sup(c))) by {
+            assert(b.inf(c).le(c)) by {
+                Self::lemma_inf_le_right();
+            };
+            Self::lemma_sup_le_sup_left(b.inf(c), c, a);
+        };
+        assert(a.sup(b.inf(c)).le(a.sup(b).inf(a.sup(c))));
+    }
+
+    proof fn lemma_le_inf_sup(a: Self, b: Self, c: Self)
+        ensures
+            a.inf(b).sup(a.inf(c)).le(a.inf(b.sup(c))),
+    {
+        Self::lemma_sup_le();
+        Self::lemma_le_inf();
+        Self::lemma_inf_le_left();
+        Self::lemma_inf_le_right();
+        Self::lemma_le_sup_left();
+        Self::lemma_le_sup_right();
+        Self::lemma_le_trans();
+        assert(a.inf(b).le(a.inf(b.sup(c)))) by {
+            assert(a.inf(b).le(a));
+
+            assert(a.inf(b).le(b.sup(c))) by {
+                assert(a.inf(b).le(b));
+                assert(b.le(b.sup(c)));
+            };
+        };
+
+        assert(a.inf(c).le(a.inf(b.sup(c)))) by {
+            assert(a.inf(c).le(a));
+
+            assert(a.inf(c).le(b.sup(c))) by {
+                assert(a.inf(c).le(c));
+                assert(c.le(b.sup(c)));
+            };
+        };
+
+        assert(a.inf(b).sup(a.inf(c)).le(a.inf(b.sup(c))));
+    }
+
+    proof fn lemma_inf_sup_self(a: Self, b: Self)
+        ensures
+            a.inf(a.sup(b)) == a,
+    {
+        Self::lemma_inf_eq_left(a, a.sup(b));
+        Self::lemma_le_sup_left();
+    }
+
+    proof fn lemma_sup_inf_self(a: Self, b: Self)
+        ensures
+            a.sup(a.inf(b)) == a,
+    {
+        Self::lemma_sup_eq_left(a, a.inf(b));
+        Self::lemma_inf_le_left();
+    }
+
+    proof fn lemma_sup_eq_iff_inf_eq(a: Self, b: Self)
+        ensures
+            (a.sup(b) == b) <==> (a.inf(b) == a),
+    {
+        Self::lemma_sup_eq_right(a, b);
+        Self::lemma_inf_eq_left(a, b);
+    }
+}
+
+/// ### Distributive lattices
+/// Corresponds to Lean's `class DistribLattice (α)`.
+/// A distributive lattice is a lattice that satisfies any of four
+/// equivalent distributive properties (of `sup` over `inf` or `inf` over `sup`,
+/// on the left or right).
+///
+/// The definition here chooses `le_sup_inf`: `(x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ (y ⊓ z)`. To prove distributivity
+/// from the dual law, use `DistribLattice.of_inf_sup_le`.
+///
+/// A classic example of a distributive lattice
+/// is the lattice of subsets of a set, and in fact this example is
+/// generic in the sense that every distributive lattice is realizable
+/// as a sublattice of a powerset lattice.
+pub trait DistribLattice: Lattice where Self: Sized {
+    /// The infimum distributes over the supremum
+    proof fn lemma_le_sup_inf()
+        ensures
+            forall|x: Self, y: Self, z: Self| #[trigger] x.sup(y).inf(x.sup(z)).le(x.sup(y.inf(z))),
+    ;
 }
 
 impl<T: SemilatticeSup> Max for T {
