@@ -21,24 +21,28 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
     spec fn sup(self, rhs: Self) -> Self;
 
     /// The supremum is an upper bound on the first argument
+    /// ∀ a b : α, a ≤ a ⊔ b
     proof fn lemma_le_sup_left()
         ensures
             forall|a: Self, b: Self| #[trigger] a.le(a.sup(b)),
     ;
 
     /// The supremum is an upper bound on the second argument
+    /// ∀ a b : α, b ≤ a ⊔ b
     proof fn lemma_le_sup_right()
         ensures
             forall|a: Self, b: Self| #[trigger] b.le(a.sup(b)),
     ;
 
     /// The supremum is the *least* upper bound
+    /// ∀ a b c : α, a ≤ c => b ≤ c => a ⊔ b ≤ c
     proof fn lemma_sup_le()
         ensures
             forall|a: Self, b: Self, c: Self| a.le(c) && b.le(c) ==> #[trigger] a.sup(b).le(c),
     ;
 
     // Derived lemmas
+    /// c <= a => c <= a ⊔ b
     proof fn lemma_le_sup_of_le_left(a: Self, b: Self, c: Self)
         requires
             c.le(a),
@@ -51,6 +55,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         };
     }
 
+    /// c <= b => c <= a ⊔ b
     proof fn lemma_le_sup_of_le_right(a: Self, b: Self, c: Self)
         requires
             c.le(b),
@@ -65,6 +70,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         };
     }
 
+    /// c < a => c < a ⊔ b
     proof fn lemma_lt_sup_of_lt_left(a: Self, b: Self, c: Self)
         requires
             c.lt(a),
@@ -86,6 +92,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         assert(c.lt(a.sup(b)));
     }
 
+    /// c < b => c < a ⊔ b
     proof fn lemma_lt_sup_of_lt_right(a: Self, b: Self, c: Self)
         requires
             c.lt(b),
@@ -108,6 +115,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         assert(c.lt(a.sup(b)));
     }
 
+    /// a ⊔ b ≤ c <==> a ≤ c ∧ b ≤ c
     proof fn lemma_sup_le_iff(a: Self, b: Self, c: Self)
         ensures
             (a.sup(b).le(c)) <==> (a.le(c) && b.le(c)),
@@ -130,6 +138,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         };
     }
 
+    /// a ⊔ b == a <==> b ≤ a
     proof fn lemma_sup_eq_left(a: Self, b: Self)
         ensures
             (a.sup(b) == a) <==> b.le(a),
@@ -153,6 +162,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         };
     }
 
+    /// a ⊔ b == b <==> a ≤ b
     proof fn lemma_sup_eq_right(a: Self, b: Self)
         ensures
             (a.sup(b) == b) <==> a.le(b),
@@ -177,6 +187,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         };
     }
 
+    /// a == a ⊔ b <==> a ≤ b
     proof fn lemma_left_eq_sup(a: Self, b: Self)
         ensures
             (a == a.sup(b)) <==> b.le(a),
@@ -184,6 +195,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         Self::lemma_sup_eq_left(a, b);
     }
 
+    /// b == a ⊔ b <==> a ≤ b
     proof fn lemma_right_eq_sup(a: Self, b: Self)
         ensures
             (b == a.sup(b)) <==> a.le(b),
@@ -191,6 +203,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         Self::lemma_sup_eq_right(a, b);
     }
 
+    /// a < a ⊔ b <==> !b ≤ a
     proof fn lemma_left_lt_sup(a: Self, b: Self)
         ensures
             a.lt(a.sup(b)) <==> !b.le(a),
@@ -221,6 +234,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         };
     }
 
+    /// b < a ⊔ b <==> !a ≤ b
     proof fn lemma_right_lt_sup(a: Self, b: Self)
         ensures
             b.lt(a.sup(b)) <==> !a.le(b),
@@ -251,6 +265,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         };
     }
 
+    /// a <= b <==> ∃ c, b == a ⊔ c
     proof fn lemma_le_iff_exists_sup(a: Self, b: Self)
         ensures
             a.le(b) <==> exists|c: Self| b == a.sup(c),
@@ -259,6 +274,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         Self::lemma_le_sup_left();
     }
 
+    /// a <= b => c <= d => a ⊔ c <= b ⊔ d
     proof fn lemma_sup_le_sup(a: Self, b: Self, c: Self, d: Self)
         requires
             a.le(b),
@@ -280,6 +296,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         assert(a.sup(c).le(b.sup(d)));
     }
 
+    /// a <= b ==> c ⊔ a <= c ⊔ b
     proof fn lemma_sup_le_sup_left(a: Self, b: Self, c: Self)
         requires
             a.le(b),
@@ -294,6 +311,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         assert(c.sup(a).le(c.sup(b)));
     }
 
+    /// a ⊔ a == a
     proof fn lemma_sup_idem(a: Self)
         ensures
             a.sup(a) == a,
@@ -302,6 +320,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         Self::lemma_le_refl();
     }
 
+    /// a ⊔ b == b ⊔ a
     proof fn lemma_sup_comm(a: Self, b: Self)
         ensures
             a.sup(b) == b.sup(a),
@@ -313,6 +332,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         Self::lemma_le_sup_right();
     }
 
+    /// a ⊔ b ⊔ c == a ⊔ (b ⊔ c)
     proof fn lemma_sup_assoc(a: Self, b: Self, c: Self)
         ensures
             a.sup(b).sup(c) == a.sup(b.sup(c)),
@@ -355,6 +375,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
 
     }
 
+    /// a ⊔ b ⊔ c == c ⊔ b ⊔ a
     proof fn lemma_sup_left_right_swap(a: Self, b: Self, c: Self)
         ensures
             a.sup(b).sup(c) == c.sup(b).sup(a),
@@ -369,6 +390,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         Self::lemma_sup_assoc(c, b, a);
     }
 
+    /// a ⊔ (a ⊔ b) == a ⊔ b
     proof fn lemma_sup_left_idem(a: Self, b: Self)
         ensures
             a.sup(a.sup(b)) == a.sup(b),
@@ -377,6 +399,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         Self::lemma_sup_idem(a);
     }
 
+    /// a ⊔ (b ⊔ b) == a ⊔ b
     proof fn lemma_sup_right_idem(a: Self, b: Self)
         ensures
             a.sup(b).sup(b) == a.sup(b),
@@ -385,6 +408,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         Self::lemma_sup_idem(b);
     }
 
+    /// a ⊔ b ⊔ c == b ⊔ a ⊔ c
     proof fn lemma_sup_left_comm(a: Self, b: Self, c: Self)
         ensures
             a.sup(b.sup(c)) == b.sup(a.sup(c)),
@@ -394,6 +418,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         Self::lemma_sup_comm(a, b);
     }
 
+    /// a ⊔ b ⊔ c == a ⊔ c ⊔ b
     proof fn lemma_sup_right_comm(a: Self, b: Self, c: Self)
         ensures
             a.sup(b).sup(c) == a.sup(c).sup(b),
@@ -403,6 +428,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         Self::lemma_sup_comm(b, c);
     }
 
+    /// a ⊔ b ⊔ (c ⊔ d) == a ⊔ c ⊔ (b ⊔ d)
     proof fn lemma_sup_sup_sup_comm(a: Self, b: Self, c: Self, d: Self)
         ensures
             a.sup(b).sup(c.sup(d)) == a.sup(c).sup(b.sup(d)),
@@ -412,6 +438,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         Self::lemma_sup_left_comm(b, c, d);
     }
 
+    /// a ⊔ (b ⊔ c) == a ⊔ b ⊔ (a ⊔ c)
     proof fn lemma_sup_sup_distrib_left(a: Self, b: Self, c: Self)
         ensures
             a.sup(b.sup(c)) == a.sup(b).sup(a.sup(c)),
@@ -420,6 +447,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         Self::lemma_sup_idem(a);
     }
 
+    /// a ⊔ b ⊔ c == a ⊔ c ⊔ (b ⊔ c)
     proof fn lemma_sup_sup_distrib_right(a: Self, b: Self, c: Self)
         ensures
             a.sup(b).sup(c) == a.sup(c).sup(b.sup(c)),
@@ -428,6 +456,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         Self::lemma_sup_idem(c);
     }
 
+    /// b <= a ⊔ c ==> c <= a ⊔ b ==> a ⊔ b == a ⊔ c
     proof fn lemma_sup_congr_left(a: Self, b: Self, c: Self)
         requires
             b.le(a.sup(c)),
@@ -450,6 +479,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         };
     }
 
+    /// a <= b ⊔ c ==> b <= a ⊔ c ==> a ⊔ c == b ⊔ c
     proof fn lemma_sup_congr_right(a: Self, b: Self, c: Self)
         requires
             a.le(b.sup(c)),
@@ -471,6 +501,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         };
     }
 
+    /// a ⊔ b == a ⊔ c <==> b <= a ⊔ c ∧ c <= a ⊔ b
     proof fn lemma_sup_eq_sup_iff_left(a: Self, b: Self, c: Self)
         ensures
             (a.sup(b) == a.sup(c)) <==> (b.le(a.sup(c)) && c.le(a.sup(b))),
@@ -494,6 +525,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         };
     }
 
+    /// a ⊔ c == b ⊔ c <==> a <= b ⊔ c ∧ b <= a ⊔ c
     proof fn lemma_sup_eq_sup_iff_right(a: Self, b: Self, c: Self)
         ensures
             (a.sup(c) == b.sup(c)) <==> (a.le(b.sup(c)) && b.le(a.sup(c))),
@@ -516,6 +548,7 @@ pub trait SemilatticeSup: PartialOrder where Self: Sized {
         };
     }
 
+    /// a != b ==> a < a ⊔ b ∨ b < a ⊔ b
     proof fn lemma_ne_lt_sup_or_lt_sup(a: Self, b: Self)
         requires
             a != b,
@@ -537,23 +570,27 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
     spec fn inf(self, rhs: Self) -> Self;
 
     /// The infimum is a lower bound on the first argument
+    /// ∀ a b : α, a ⊓ b ≤ a
     proof fn lemma_inf_le_left()
         ensures
             forall|a: Self, b: Self| #[trigger] a.inf(b).le(a),
     ;
 
     /// The infimum is a lower bound on the second argument
+    /// ∀ a b : α, a ⊓ b ≤ b
     proof fn lemma_inf_le_right()
         ensures
             forall|a: Self, b: Self| #[trigger] a.inf(b).le(b),
     ;
 
     /// The infimum is the *greatest* lower bound
+    /// ∀ a b c : α, a <= b => a <= c => a <= b ⊓ c
     proof fn lemma_le_inf()
         ensures
             forall|a: Self, b: Self, c: Self| a.le(b) && a.le(c) ==> #[trigger] a.le(b.inf(c)),
     ;
 
+    /// a <= c ==> a ⊓ b <= c
     proof fn lemma_inf_le_of_left_le(a: Self, b: Self, c: Self)
         requires
             a.le(c),
@@ -567,6 +604,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         assert(a.inf(b).le(c));
     }
 
+    /// b <= c ==> a ⊓ b <= c
     proof fn lemma_inf_le_of_right_le(a: Self, b: Self, c: Self)
         requires
             b.le(c),
@@ -580,6 +618,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         assert(a.inf(b).le(c));
     }
 
+    /// a < c ==> a ⊓ b < c
     proof fn lemma_inf_lt_of_left_lt(a: Self, b: Self, c: Self)
         requires
             a.lt(c),
@@ -601,6 +640,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         assert(a.inf(b).lt(c));
     }
 
+    /// b < c ==> a ⊓ b < c
     proof fn lemma_inf_lt_of_right_lt(a: Self, b: Self, c: Self)
         requires
             b.lt(c),
@@ -622,6 +662,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         assert(a.inf(b).lt(c));
     }
 
+    /// a <= b ⊓ c <==> a <= b ∧ a <= c
     proof fn lemma_le_inf_iff(a: Self, b: Self, c: Self)
         ensures
             a.le(b.inf(c)) <==> (a.le(b) && a.le(c)),
@@ -645,6 +686,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         };
     }
 
+    /// a ⊓ b == a <==> a <= b
     proof fn lemma_inf_eq_left(a: Self, b: Self)
         ensures
             (a.inf(b) == a) <==> a.le(b),
@@ -668,6 +710,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         };
     }
 
+    /// a ⊓ b == b <==> b <= a
     proof fn lemma_inf_eq_right(a: Self, b: Self)
         ensures
             (a.inf(b) == b) <==> b.le(a),
@@ -691,6 +734,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         };
     }
 
+    /// a == a ⊓ b <==> a <= b
     proof fn lemma_left_eq_inf(a: Self, b: Self)
         ensures
             (a == a.inf(b)) <==> a.le(b),
@@ -698,6 +742,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_inf_eq_left(a, b);
     }
 
+    /// b == a ⊓ b <==> b <= a
     proof fn lemma_right_eq_inf(a: Self, b: Self)
         ensures
             (b == a.inf(b)) <==> b.le(a),
@@ -705,6 +750,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_inf_eq_right(a, b);
     }
 
+    /// a ⊓ b < a <==> !a <= b
     proof fn lemma_inf_lt_left(a: Self, b: Self)
         ensures
             a.inf(b).lt(a) <==> !a.le(b),
@@ -735,6 +781,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         };
     }
 
+    /// a ⊓ b < b <==> !b <= a
     proof fn lemma_inf_lt_right(a: Self, b: Self)
         ensures
             a.inf(b).lt(b) <==> !b.le(a),
@@ -765,6 +812,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         };
     }
 
+    /// a != b ==> a ⊓ b < a ∨ a ⊓ b < b
     proof fn lemma_inf_lt_left_or_right(a: Self, b: Self)
         requires
             a != b,
@@ -776,6 +824,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_le_antisymm();
     }
 
+    /// a <= b ==> c <= d ==> a ⊓ c <= b ⊓ d
     proof fn lemma_inf_le_inf(a: Self, b: Self, c: Self, d: Self)
         requires
             a.le(b),
@@ -797,6 +846,18 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         assert(a.inf(c).le(b.inf(d)));
     }
 
+    /// b ≤ c ==> a ⊓ b ≤ a ⊓ c
+    proof fn lemma_inf_le_inf_left(a: Self, b: Self, c: Self)
+        requires
+            b.le(c),
+        ensures
+            a.inf(b).le(a.inf(c)),
+    {
+        Self::lemma_le_refl();
+        Self::lemma_inf_le_inf(a, a, b, c);
+    }
+
+    /// b <= c ==> b ⊓ a <= c ⊓ a
     proof fn lemma_inf_le_inf_right(a: Self, b: Self, c: Self)
         requires
             b.le(c),
@@ -809,6 +870,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         assert(b.inf(a).le(c.inf(a)));
     }
 
+    /// a ⊓ a == a
     proof fn lemma_inf_idem(a: Self)
         ensures
             a.inf(a) == a,
@@ -817,6 +879,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_le_refl();
     }
 
+    /// a ⊓ b == b ⊓ a
     proof fn lemma_inf_comm(a: Self, b: Self)
         ensures
             a.inf(b) == b.inf(a),
@@ -828,6 +891,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_inf_le_right();
     }
 
+    /// a ⊓ b ⊓ c == a ⊓ (b ⊓ c)
     proof fn lemma_inf_assoc(a: Self, b: Self, c: Self)
         ensures
             a.inf(b).inf(c) == a.inf(b.inf(c)),
@@ -872,6 +936,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         };
     }
 
+    /// a ⊓ b ⊓ c == c ⊓ b ⊓ a
     proof fn lemma_inf_left_right_swap(a: Self, b: Self, c: Self)
         ensures
             a.inf(b).inf(c) == c.inf(b).inf(a),
@@ -886,6 +951,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_inf_assoc(c, b, a);
     }
 
+    /// a ⊓ (a ⊓ b) == a ⊓ b
     proof fn lemma_inf_left_idem(a: Self, b: Self)
         ensures
             a.inf(a.inf(b)) == a.inf(b),
@@ -894,6 +960,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_inf_idem(a);
     }
 
+    /// a ⊓ b ⊓ b == a ⊓ b
     proof fn lemma_inf_right_idem(a: Self, b: Self)
         ensures
             a.inf(b).inf(b) == a.inf(b),
@@ -902,6 +969,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_inf_idem(b);
     }
 
+    /// a ⊓ (b ⊓ c) == b ⊓ (a ⊓ c)
     proof fn lemma_inf_left_comm(a: Self, b: Self, c: Self)
         ensures
             a.inf(b.inf(c)) == b.inf(a.inf(c)),
@@ -911,6 +979,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_inf_comm(a, b);
     }
 
+    /// a ⊓ b ⊓ c == a ⊓ c ⊓ b
     proof fn lemma_inf_right_comm(a: Self, b: Self, c: Self)
         ensures
             a.inf(b).inf(c) == a.inf(c).inf(b),
@@ -920,6 +989,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_inf_comm(b, c);
     }
 
+    /// a ⊓ b ⊓ (c ⊓ d) == a ⊓ c ⊓ (b ⊓ d)
     proof fn lemma_inf_inf_inf_comm(a: Self, b: Self, c: Self, d: Self)
         ensures
             a.inf(b).inf(c.inf(d)) == a.inf(c).inf(b.inf(d)),
@@ -929,6 +999,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_inf_left_comm(b, c, d);
     }
 
+    /// a ⊓ (b ⊓ c) == a ⊓ b ⊓ (a ⊓ c)
     proof fn lemma_inf_inf_distrib_left(a: Self, b: Self, c: Self)
         ensures
             a.inf(b.inf(c)) == a.inf(b).inf(a.inf(c)),
@@ -937,6 +1008,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_inf_idem(a);
     }
 
+    /// a ⊓ b ⊓ c == a ⊓ c ⊓ (b ⊓ c)
     proof fn lemma_inf_inf_distrib_right(a: Self, b: Self, c: Self)
         ensures
             a.inf(b).inf(c) == a.inf(c).inf(b.inf(c)),
@@ -945,6 +1017,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_inf_idem(c);
     }
 
+    /// a ⊓ c <= b ==> a ⊓ b <= c ==> a ⊓ b == a ⊓ c
     proof fn lemma_inf_congr_left(a: Self, b: Self, c: Self)
         requires
             a.inf(c).le(b),
@@ -958,6 +1031,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_inf_le_left();
     }
 
+    /// b ⊓ c <= a ==> a ⊓ c <= b ==> a ⊓ c == b ⊓ c
     proof fn lemma_inf_congr_right(a: Self, b: Self, c: Self)
         requires
             b.inf(c).le(a),
@@ -971,6 +1045,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         Self::lemma_inf_le_right();
     }
 
+    /// a ⊓ b == a ⊓ c <==> a ⊓ c <= b ∧ a ⊓ b <= c
     proof fn lemma_inf_eq_inf_iff_left(a: Self, b: Self, c: Self)
         ensures
             (a.inf(b) == a.inf(c)) <==> (a.inf(c).le(b) && a.inf(b).le(c)),
@@ -983,6 +1058,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         }
     }
 
+    /// a ⊓ c == b ⊓ c <==> b ⊓ c <= a ∧ a ⊓ c <= b
     proof fn lemma_inf_eq_inf_iff_right(a: Self, b: Self, c: Self)
         ensures
             (a.inf(c) == b.inf(c)) <==> (b.inf(c).le(a) && a.inf(c).le(b)),
@@ -995,6 +1071,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
         }
     }
 
+    /// a != b ==> a ⊓ b < a ∨ a ⊓ b < b
     proof fn lemma_ne_inf_lt_or_inf_lt(a: Self, b: Self)
         requires
             a != b,
@@ -1010,6 +1087,7 @@ pub trait SemilatticeInf: PartialOrder where Self: Sized {
 /// Corresponds to Lean's `class Lattice (α : Type u)`.
 /// A lattice is a join-semilattice which is also a meet-semilattice.
 pub trait Lattice: SemilatticeSup + SemilatticeInf where Self: Sized {
+    /// a ⊓ b <= a ⊔ b
     proof fn lemma_inf_le_sup(a: Self, b: Self)
         ensures
             a.inf(b).le(a.sup(b)),
@@ -1023,6 +1101,7 @@ pub trait Lattice: SemilatticeSup + SemilatticeInf where Self: Sized {
         assert(a.inf(b).le(a.sup(b)));
     }
 
+    /// a ⊔ b <= a ⊓ b <==> (a == b)
     proof fn lemma_sup_le_inf(a: Self, b: Self)
         ensures
             a.sup(b).le(a.inf(b)) <==> (a == b),
@@ -1049,6 +1128,7 @@ pub trait Lattice: SemilatticeSup + SemilatticeInf where Self: Sized {
         }
     }
 
+    /// a ⊓ b == a ⊔ b <==> (a == b)
     proof fn lemma_inf_eq_sup(a: Self, b: Self)
         ensures
             (a.inf(b) == a.sup(b)) <==> (a == b),
@@ -1058,6 +1138,7 @@ pub trait Lattice: SemilatticeSup + SemilatticeInf where Self: Sized {
         Self::lemma_le_antisymm();
     }
 
+    /// a ⊔ b == a ⊓ b <==> (a == b)
     proof fn lemma_sup_eq_inf(a: Self, b: Self)
         ensures
             (a.sup(b) == a.inf(b)) <==> (a == b),
@@ -1065,6 +1146,7 @@ pub trait Lattice: SemilatticeSup + SemilatticeInf where Self: Sized {
         Self::lemma_inf_eq_sup(a, b);
     }
 
+    /// a ⊓ b < a ⊔ b <==> (a != b)
     proof fn lemma_inf_lt_sup(a: Self, b: Self)
         ensures
             a.inf(b).lt(a.sup(b)) <==> (a != b),
@@ -1075,6 +1157,7 @@ pub trait Lattice: SemilatticeSup + SemilatticeInf where Self: Sized {
         Self::lemma_le_antisymm();
     }
 
+    /// a ⊓ b == c ∧ a ⊔ b == c <==> (a == c && b == c)
     proof fn lemma_inf_eq_and_sup_eq_iff(a: Self, b: Self, c: Self)
         ensures
             (a.inf(b) == c && a.sup(b) == c) <==> (a == c && b == c),
@@ -1088,6 +1171,7 @@ pub trait Lattice: SemilatticeSup + SemilatticeInf where Self: Sized {
         Self::lemma_sup_idem(c);
     }
 
+    /// a ⊔ (b ⊓ c) <= (a ⊔ b) ⊓ (a ⊔ c)
     proof fn lemma_sup_inf_le(a: Self, b: Self, c: Self)
         ensures
             a.sup(b.inf(c)).le(a.sup(b).inf(a.sup(c))),
@@ -1114,6 +1198,7 @@ pub trait Lattice: SemilatticeSup + SemilatticeInf where Self: Sized {
         assert(a.sup(b.inf(c)).le(a.sup(b).inf(a.sup(c))));
     }
 
+    /// a ⊓ b ⊔ (a ⊓ c) <= a ⊓ (b ⊔ c)
     proof fn lemma_le_inf_sup(a: Self, b: Self, c: Self)
         ensures
             a.inf(b).sup(a.inf(c)).le(a.inf(b.sup(c))),
@@ -1146,6 +1231,7 @@ pub trait Lattice: SemilatticeSup + SemilatticeInf where Self: Sized {
         assert(a.inf(b).sup(a.inf(c)).le(a.inf(b.sup(c))));
     }
 
+    /// a ⊓ (a ⊔ b) == a
     proof fn lemma_inf_sup_self(a: Self, b: Self)
         ensures
             a.inf(a.sup(b)) == a,
@@ -1154,6 +1240,7 @@ pub trait Lattice: SemilatticeSup + SemilatticeInf where Self: Sized {
         Self::lemma_le_sup_left();
     }
 
+    /// a ⊔ (a ⊓ b) == a
     proof fn lemma_sup_inf_self(a: Self, b: Self)
         ensures
             a.sup(a.inf(b)) == a,
@@ -1162,6 +1249,7 @@ pub trait Lattice: SemilatticeSup + SemilatticeInf where Self: Sized {
         Self::lemma_inf_le_left();
     }
 
+    /// a ⊔ b == b <==> a ⊓ b == a
     proof fn lemma_sup_eq_iff_inf_eq(a: Self, b: Self)
         ensures
             (a.sup(b) == b) <==> (a.inf(b) == a),
@@ -1186,10 +1274,166 @@ pub trait Lattice: SemilatticeSup + SemilatticeInf where Self: Sized {
 /// as a sublattice of a powerset lattice.
 pub trait DistribLattice: Lattice where Self: Sized {
     /// The infimum distributes over the supremum
+    /// ∀ x y z : α, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z
     proof fn lemma_le_sup_inf()
         ensures
             forall|x: Self, y: Self, z: Self| #[trigger] x.sup(y).inf(x.sup(z)).le(x.sup(y.inf(z))),
     ;
+
+    /// a ⊔ (b ⊓ c) == (a ⊔ b) ⊓ (a ⊔ c)
+    proof fn lemma_sup_inf_left(a: Self, b: Self, c: Self)
+        ensures
+            a.sup(b.inf(c)) == a.sup(b).inf(a.sup(c)),
+    {
+        Self::lemma_le_antisymm();
+        Self::lemma_le_sup_inf();
+        Self::lemma_sup_inf_le(a, b, c);
+        Self::lemma_le_inf();
+        Self::lemma_inf_le_left();
+        Self::lemma_inf_le_right();
+        Self::lemma_sup_le_sup_left(b.inf(c), b, a);
+        Self::lemma_sup_le_sup_left(b.inf(c), c, a);
+
+        assert(a.sup(b.inf(c)) == a.sup(b).inf(a.sup(c))) by {
+            assert(a.sup(b.inf(c)).le(a.sup(b).inf(a.sup(c)))) by {
+                Self::lemma_sup_inf_le(a, b, c);
+            };
+
+            assert(a.sup(b).inf(a.sup(c)).le(a.sup(b.inf(c)))) by {
+                Self::lemma_le_sup_inf();
+            };
+        };
+    }
+
+    /// a ⊓ b ⊔ c == (a ⊔ c) ⊓ (b ⊔ c)
+    proof fn lemma_sup_inf_right(a: Self, b: Self, c: Self)
+        ensures
+            a.inf(b).sup(c) == a.sup(c).inf(b.sup(c)),
+    {
+        Self::lemma_sup_inf_left(c, a, b);
+        Self::lemma_sup_comm(a.inf(b), c);
+        Self::lemma_sup_comm(a, c);
+        Self::lemma_sup_comm(b, c);
+    }
+
+    /// a ⊓ (b ⊔ c) == (a ⊓ b) ⊔ (a ⊓ c)
+    proof fn lemma_inf_sup_left(a: Self, b: Self, c: Self)
+        ensures
+            a.inf(b.sup(c)) == a.inf(b).sup(a.inf(c)),
+    {
+        Self::lemma_le_antisymm();
+        Self::lemma_sup_inf_left(a, b, c);
+        Self::lemma_sup_inf_right(c, a, b);
+        Self::lemma_sup_inf_self(a, b);
+        Self::lemma_inf_sup_self(a, c);
+        Self::lemma_sup_comm(a, c);
+        Self::lemma_sup_comm(b, c);
+        Self::lemma_sup_comm(a.inf(b), c);
+        Self::lemma_inf_assoc(a, a.sup(c), b.sup(c));
+        Self::lemma_inf_assoc(a, c.sup(a), c.sup(b));
+        Self::lemma_inf_assoc(a, c, a.inf(b));
+
+        assert(a.inf(b.sup(c)) == a.inf(a.sup(c)).inf(b.sup(c)));
+        assert(a.inf(b.sup(c)) == a.inf(a.inf(b).sup(c))) by {
+            Self::lemma_inf_assoc(a, a.inf(b), c);
+            Self::lemma_sup_inf_right(a, b, c);
+        };
+        assert(a.inf(b.sup(c)) == (a.sup(a.inf(b))).inf(a.inf(b).sup(c)));
+        assert(a.inf(b.sup(c)) == (a.inf(b).sup(a)).inf(a.inf(b).sup(c))) by {
+            Self::lemma_sup_comm(a.inf(b), a);
+        };
+        assert(a.inf(b.sup(c)) == a.inf(b).sup(a.inf(c))) by {
+            Self::lemma_sup_inf_left(a.inf(b), a, c);
+        };
+
+    }
+
+    /// (a ⊔ b) ⊓ c = (a ⊓ c) ⊔ (b ⊓ c)
+    proof fn lemma_inf_sup_right(a: Self, b: Self, c: Self)
+        ensures
+            a.sup(b).inf(c) == a.inf(c).sup(b.inf(c)),
+    {
+        Self::lemma_inf_sup_left(c, a, b);
+        Self::lemma_inf_comm(a.sup(b), c);
+        Self::lemma_inf_comm(a, c);
+        Self::lemma_inf_comm(b, c);
+    }
+
+    /// x ⊓ z ≤ y ⊓ z ==> x ⊔ z ≤ y ⊔ z ==> x ≤ y
+    proof fn lemma_le_of_inf_le_sup_le(x: Self, y: Self, z: Self)
+        requires
+            x.inf(z).le(y.inf(z)),
+            x.sup(z).le(y.sup(z)),
+        ensures
+            x.le(y),
+    {
+        Self::lemma_le_trans();
+        Self::lemma_le_sup_right();
+        Self::lemma_sup_inf_left(x, y, z);
+        Self::lemma_sup_inf_left(y, x, z);
+        Self::lemma_sup_comm(x, y);
+        Self::lemma_sup_inf_self(y, z);
+
+        assert(x.le(y.inf(z).sup(x)));
+        assert(y.inf(z).sup(x) == (y.sup(x)).inf(x.sup(z))) by {
+            Self::lemma_sup_inf_right(y, z, x);
+            Self::lemma_sup_comm(x, z);
+
+        };
+        assert((y.sup(x)).inf(x.sup(z)).le((y.sup(x)).inf(y.sup(z)))) by {
+            Self::lemma_inf_le_inf_left(y.sup(x), x.sup(z), y.sup(z));
+        };
+        assert((y.sup(x)).inf(y.sup(z)) == y.sup(x.inf(z))) by {
+            Self::lemma_sup_inf_left(y, x, z);
+        };
+        assert(y.sup(x.inf(z)).le(y.sup(y.inf(z)))) by {
+            Self::lemma_sup_le_sup_left(x.inf(z), y.inf(z), y);
+        };
+        assert(y.sup(y.inf(z)).le(y)) by {
+            Self::lemma_inf_le_left();
+            Self::lemma_sup_le();
+            Self::lemma_le_refl();
+        }
+    }
+
+    /// b ⊓ a = c ⊓ a ==> b ⊔ a = c ⊔ a ==> b = c
+    proof fn lemma_eq_of_inf_eq_sup_eq(a: Self, b: Self, c: Self)
+        requires
+            b.inf(a) == c.inf(a),
+            b.sup(a) == c.sup(a),
+        ensures
+            b == c,
+    {
+        Self::lemma_le_antisymm();
+        Self::lemma_le_refl();
+        Self::lemma_le_of_inf_le_sup_le(b, c, a);
+        Self::lemma_le_of_inf_le_sup_le(c, b, a);
+
+        assert(b.le(c)) by {
+            assert(b.inf(a).le(c.inf(a))) by {
+                assert(b.inf(a).le(b.inf(a)));
+            };
+            assert(b.sup(a).le(c.sup(a))) by {
+                assert(b.sup(a).le(b.sup(a)));
+            };
+            Self::lemma_le_of_inf_le_sup_le(b, c, a);
+        };
+
+        assert(c.le(b)) by {
+            assert(c.inf(a) == b.inf(a));
+            assert(c.inf(a).le(b.inf(a))) by {
+                assert(c.inf(a).le(c.inf(a)));
+            };
+
+            assert(c.sup(a) == b.sup(a));
+            assert(c.sup(a).le(b.sup(a))) by {
+                assert(c.sup(a).le(c.sup(a)));
+            };
+            Self::lemma_le_of_inf_le_sup_le(c, b, a);
+        };
+
+        assert(b == c);
+    }
 }
 
 impl<T: SemilatticeSup> Max for T {
