@@ -1,5 +1,5 @@
 //Mathlib/Order/CompleteLattice/Defs.lean
-use crate::order::{defs::partialorder::*, setnotation::*};
+use crate::order::{bounds::defs::*, defs::partialorder::*, setnotation::*};
 use vstd::prelude::*;
 
 /* # Definition of complete lattices
@@ -43,18 +43,104 @@ verus! {
 /// Nevertheless it is sometimes a useful intermediate step in constructions.
 pub trait CompleteSemilatticeSup: PartialOrder + SupSet where Self: Sized {
     /// Any element of a set is less than the set supremum.
+    /// ∀ s, ∀ a ∈ s, a ≤ sSup s
     #[allow(non_snake_case)]
     proof fn lemma_le_sSup()
         ensures
-            forall|s: Set<Self>, a: Self| s.contains(a) ==> #[trigger] a.le(Self::sSup(s)),
+            forall|s: Set<Self>| s.all(|a: Self| a.le(#[trigger] Self::sSup(s))),
     ;
 
     /// Any upper bound is more than the set supremum.
+    /// ∀ s a, (∀ b ∈ s, b ≤ a) → sSup s ≤ a
     #[allow(non_snake_case)]
     proof fn lemma_sSup_le()
         ensures
             forall|s: Set<Self>, a: Self|
-                (forall|b: Self| s.contains(b) ==> b.le(a)) ==> #[trigger] Self::sSup(s).le(a),
+                s.all(|b: Self| b.le(a)) ==> #[trigger] Self::sSup(s).le(a),
+    ;
+
+    /// b ∈ s ==> a ≤ b ==> a ≤ sSup s
+    #[allow(non_snake_case)]
+    proof fn lemma_le_sSup_of_le(s: Set<Self>, a: Self, b: Self)
+        requires
+            s.contains(b),
+            a.le(b),
+        ensures
+            a.le(Self::sSup(s)),
+    {
+        Self::lemma_le_sSup();
+        Self::lemma_le_trans();
+
+        assert(b.le(Self::sSup(s)));
+
+        assert(a.le(Self::sSup(s)));
+    }
+
+    /// sSup s ≤ a ↔ ∀ b ∈ s, b ≤ a
+    #[allow(non_snake_case)]
+    proof fn lemma_sSup_le_iff(s: Set<Self>, a: Self)
+        ensures
+            Self::sSup(s).le(a) <==> s.all(|b: Self| b.le(a)),
+    {
+        Self::lemma_le_sSup();
+        Self::lemma_sSup_le();
+        Self::lemma_le_trans();
+
+        if Self::sSup(s).le(a) {
+            assert forall|b: Self| s.contains(b) implies b.le(a) by {
+                assert(b.le(Self::sSup(s)));
+                assert(b.le(a));
+            };
+        }
+        if forall|b: Self| s.contains(b) ==> b.le(a) {
+            assert(Self::sSup(s).le(a));
+        }
+    }
+
+    /// a ≤ sSup s ↔ ∀ b ∈ upperBounds s, a ≤ b
+    #[allow(non_snake_case)]
+    proof fn lemma_le_sSup_iff(s: Set<Self>, a: Self)
+        ensures
+            a.le(Self::sSup(s)) <==> upperBounds(s).all(|b: Self| a.le(b)),
+    {
+        Self::lemma_le_sSup();
+        Self::lemma_sSup_le();
+        Self::lemma_le_trans();
+
+        if a.le(Self::sSup(s)) {
+            assert forall|b: Self| #[trigger] upperBounds(s).contains(b) implies a.le(b) by {
+                assert(Self::sSup(s).le(b));
+                assert(a.le(b));
+            };
+        }
+        if forall|b: Self| #[trigger] upperBounds(s).contains(b) ==> a.le(b) {
+            assert(upperBounds(s).contains(Self::sSup(s)));
+            assert(a.le(Self::sSup(s)));
+        }
+    }
+}
+
+/// Corresponds to Lean's `class CompleteSemilatticeInf`.
+/// Note that we rarely use `CompleteSemilatticeInf`
+/// (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
+///
+/// Nevertheless it is sometimes a useful intermediate step in constructions.
+pub trait CompleteSemilatticeInf: PartialOrder + InfSet where Self: Sized {
+    /// Any element of a set is more than the set infimum.
+    /// ∀ s, ∀ a ∈ s, sInf s ≤ a
+    #[allow(non_snake_case)]
+    proof fn lemma_sInf_le()
+        ensures
+            forall|s: Set<Self>| s.all(|a: Self| (#[trigger] Self::sInf(s)).le(a)),
+    ;
+
+    /// Any lower bound is less than the set infimum.
+    /// ∀ s a, (∀ b ∈ s, a ≤ b) → a ≤ sInf s
+    #[allow(non_snake_case)]
+    proof fn lemma_le_sInf()
+        ensures
+            forall|s: Set<Self>, a: Self|
+                (s.all(|b: Self| a.le(b))) ==> #[trigger] a.le(Self::sInf(s)),
     ;
 }
 
