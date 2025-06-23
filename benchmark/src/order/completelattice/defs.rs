@@ -51,7 +51,7 @@ pub trait CompleteSemilatticeSup: PartialOrder + SupSet where Self: Sized {
     ;
 
     /// Any upper bound is more than the set supremum.
-    /// ∀ s a, (∀ b ∈ s, b ≤ a) → sSup s ≤ a
+    /// ∀ s a, (∀ b ∈ s, b ≤ a) => sSup s ≤ a
     #[allow(non_snake_case)]
     proof fn lemma_sSup_le()
         ensures
@@ -59,7 +59,7 @@ pub trait CompleteSemilatticeSup: PartialOrder + SupSet where Self: Sized {
                 s.all(|b: Self| b.le(a)) ==> #[trigger] Self::sSup(s).le(a),
     ;
 
-    /// b ∈ s ==> a ≤ b ==> a ≤ sSup s
+    /// b ∈ s => a ≤ b => a ≤ sSup s
     #[allow(non_snake_case)]
     proof fn lemma_le_sSup_of_le(s: Set<Self>, a: Self, b: Self)
         requires
@@ -76,7 +76,7 @@ pub trait CompleteSemilatticeSup: PartialOrder + SupSet where Self: Sized {
         assert(a.le(Self::sSup(s)));
     }
 
-    /// sSup s ≤ a ↔ ∀ b ∈ s, b ≤ a
+    /// sSup s ≤ a <=> ∀ b ∈ s, b ≤ a
     #[allow(non_snake_case)]
     proof fn lemma_sSup_le_iff(s: Set<Self>, a: Self)
         ensures
@@ -97,7 +97,7 @@ pub trait CompleteSemilatticeSup: PartialOrder + SupSet where Self: Sized {
         }
     }
 
-    /// a ≤ sSup s ↔ ∀ b ∈ upperBounds s, a ≤ b
+    /// a ≤ sSup s <=> ∀ b ∈ upperBounds s, a ≤ b
     #[allow(non_snake_case)]
     proof fn lemma_le_sSup_iff(s: Set<Self>, a: Self)
         ensures
@@ -118,6 +118,30 @@ pub trait CompleteSemilatticeSup: PartialOrder + SupSet where Self: Sized {
             assert(a.le(Self::sSup(s)));
         }
     }
+
+    /// a ≤ (⨆ i, s(i)) <=> (∀ b, (∀ i, s(i) ≤ b) => a ≤ b)
+    #[allow(non_snake_case)]
+    proof fn lemma_le_iSup_iff<I>(s: spec_fn(I) -> Self, a: Self)
+        ensures
+            a.le(iSup(s)) <==> (forall|b: Self| (forall|i: I| #[trigger] s(i).le(b)) ==> a.le(b)),
+    {
+        Self::lemma_le_sSup_iff(range(s), a);
+
+        if a.le(iSup(s)) {
+            assert(a.le(Self::sSup(range(s))));
+            assert forall|b: Self| (forall|i: I| #[trigger] s(i).le(b)) implies a.le(b) by {
+                assert(upperBounds(range(s)).contains(b));
+            };
+        }
+        if forall|b: Self| (forall|i: I| #[trigger] s(i).le(b)) ==> a.le(b) {
+            assert forall|b: Self| upperBounds(range(s)).contains(b) implies #[trigger] a.le(b) by {
+                assert forall|i: I| #[trigger] s(i).le(b) by {
+                    assert(forall|x: Self| range(s).contains(x) ==> #[trigger] x.le(b));
+                };
+                assert(a.le(b));
+            };
+        }
+    }
 }
 
 /// Corresponds to Lean's `class CompleteSemilatticeInf`.
@@ -135,13 +159,85 @@ pub trait CompleteSemilatticeInf: PartialOrder + InfSet where Self: Sized {
     ;
 
     /// Any lower bound is less than the set infimum.
-    /// ∀ s a, (∀ b ∈ s, a ≤ b) → a ≤ sInf s
+    /// ∀ s a, (∀ b ∈ s, a ≤ b) => a ≤ sInf s
     #[allow(non_snake_case)]
     proof fn lemma_le_sInf()
         ensures
             forall|s: Set<Self>, a: Self|
                 (s.all(|b: Self| a.le(b))) ==> #[trigger] a.le(Self::sInf(s)),
     ;
+
+    /// IsGLB s a <=> sInf s = a
+    #[allow(non_snake_case)]
+    proof fn lemma_isGLB_iff_sInf_eq(s: Set<Self>, a: Self)
+        ensures
+            IsGLB(s, a) <==> (Self::sInf(s) == a),
+    {
+        Self::lemma_le_antisymm();
+        Self::lemma_sInf_le();
+        Self::lemma_le_sInf();
+
+        if IsGLB(s, a) {
+            assert(a.le(Self::sInf(s))) by {
+                assert forall|b: Self| s.contains(b) implies a.le(b) by {
+                    assert(IsGreatest(lowerBounds(s), a));
+                };
+            };
+            assert(Self::sInf(s).le(a)) by {
+                assert(IsGreatest(lowerBounds(s), a));
+                assert(lowerBounds(s).contains(Self::sInf(s))) by {
+                    assert(IsGreatest(lowerBounds(s), Self::sInf(s)));
+                };
+            };
+
+            assert(Self::sInf(s) == a);
+        }
+    }
+
+    /// sInf s ≤ a <=> ∀ b ∈ lowerBounds s, b ≤ a
+    #[allow(non_snake_case)]
+    proof fn lemma_sInf_le_iff(s: Set<Self>, a: Self)
+        ensures
+            Self::sInf(s).le(a) <==> lowerBounds(s).all(|b: Self| b.le(a)),
+    {
+        Self::lemma_sInf_le();
+        Self::lemma_le_sInf();
+        Self::lemma_le_trans();
+
+        if Self::sInf(s).le(a) {
+            assert forall|b: Self| #[trigger] lowerBounds(s).contains(b) implies b.le(a) by {
+                assert(b.le(Self::sInf(s))) by {
+                    assert(forall|x: Self| s.contains(x) ==> b.le(x));
+                };
+                assert(b.le(a));
+            };
+        }
+        if lowerBounds(s).all(|b: Self| b.le(a)) {
+            assert(lowerBounds(s).contains(Self::sInf(s)));
+            assert(Self::sInf(s).le(a));
+        }
+    }
+
+    /// (⨅ i, s(i)) ≤ a <=> (∀ b, (∀ i, b ≤ s(i)) => b ≤ a)
+    #[allow(non_snake_case)]
+    proof fn lemma_iInf_le_iff<I>(s: spec_fn(I) -> Self, a: Self)
+        ensures
+            iInf(s).le(a) <==> (forall|b: Self| (forall|i: I| #[trigger] b.le(s(i))) ==> b.le(a)),
+    {
+        Self::lemma_sInf_le_iff(range(s), a);
+
+        if iInf(s).le(a) {
+            assert(Self::sInf(range(s)).le(a));
+            assert forall|b: Self| (forall|i: I| #[trigger] b.le(s(i))) implies b.le(a) by {
+                assert(lowerBounds(range(s)).contains(b));
+            };
+        }
+        if forall|b: Self| (forall|i: I| #[trigger] b.le(s(i))) ==> b.le(a) {
+            assert forall|b: Self| lowerBounds(range(s)).contains(b) implies #[trigger] b.le(a) by {
+                assert(forall|x: Self| range(s).contains(x) ==> #[trigger] b.le(x));
+            };
+        }
+    }
 }
 
 } // verus!

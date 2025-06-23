@@ -18,4 +18,20 @@ pub trait InfSet where Self: Sized {
     spec fn sInf(s: Set<Self>) -> Self;
 }
 
+pub open spec fn range<I, T>(f: spec_fn(I) -> T) -> Set<T> {
+    Set::new(|x: T| exists|y: I| #[trigger] f(y) == x)
+}
+
+/// Indexed supremum
+#[allow(non_snake_case)]
+pub open spec fn iSup<I, T: SupSet>(s: spec_fn(I) -> T) -> T {
+    T::sSup(range(s))
+}
+
+/// Indexed infimum
+#[allow(non_snake_case)]
+pub open spec fn iInf<I, T: InfSet>(s: spec_fn(I) -> T) -> T {
+    T::sInf(range(s))
+}
+
 } // verus!
