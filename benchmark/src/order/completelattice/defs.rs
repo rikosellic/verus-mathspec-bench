@@ -1,5 +1,13 @@
-//Mathlib/Order/CompleteLattice/Defs.lean
-use crate::order::{bounds::defs::*, defs::partialorder::*, setnotation::*};
+/*
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl
+*/
+// Mathlib/Order/CompleteLattice/Defs.lean
+// Translated to Verus by: Xinyi Wan, 2025.
+use crate::order::{
+    bounds::defs::*, defs::partialorder::*, lattice::*, notation::*, setnotation::*,
+};
 use vstd::prelude::*;
 
 /* # Definition of complete lattices
@@ -238,6 +246,25 @@ pub trait CompleteSemilatticeInf: PartialOrder + InfSet where Self: Sized {
             };
         }
     }
+}
+
+/// Corresponds to Lean's `class CompleteLattice`.
+/// A complete lattice is a bounded lattice which has suprema and infima for every subset.
+pub trait CompleteLattice:
+    Lattice + CompleteSemilatticeSup + CompleteSemilatticeInf + Top + Bot where Self: Sized {
+    /// Any element is less than the top one.
+    /// ∀ x : α, x ≤ ⊤
+    proof fn lemma_le_top()
+        ensures
+            forall|x: Self| #[trigger] x.le(Self::top()),
+    ;
+
+    /// Any element is more than the bottom one.
+    /// ∀ x : α, ⊥ ≤ x
+    proof fn lemma_bot_le()
+        ensures
+            forall|x: Self| #[trigger] Self::bot().le(x),
+    ;
 }
 
 } // verus!

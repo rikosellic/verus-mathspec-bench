@@ -1,0 +1,10 @@
+This project contains derivative works of mathlib4, which is licensed
+under the Apache License, Version 2.0. The original Lean source code
+has been translated into the Verus language for this project.
+
+The original mathlib4 project can be found at:
+https://github.com/leanprover-community/mathlib4
+
+==============================================================================
+
+Copyright (c) 2017-2024 Mathlib Authors.

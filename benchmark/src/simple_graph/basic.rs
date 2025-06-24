@@ -1,3 +1,10 @@
+/*
+Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
+*/
+// Mathlib/Combinatorics/SimpleGraph/Basic.lean
+// Translated to Verus by: Xinyi Wan, 2025.
 use vstd::{
     prelude::*,
     relations::{irreflexive, symmetric},

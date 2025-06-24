@@ -1,4 +1,10 @@
-//mathlib4/Mathlib/Order/Defs/PartialOrder.lean
+/*
+Copyright (c) 2016 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura
+*/
+// mathlib4/Mathlib/Order/Defs/PartialOrder.lean
+// Translated to Verus by: Xinyi Wan, 2025.
 use vstd::prelude::*;
 
 verus! {
