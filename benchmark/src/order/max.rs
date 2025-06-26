@@ -108,7 +108,6 @@ impl<T: PreOrder + NoMaxOrder> NoTopOrder for T {
 /// This predicate is roughly an unbundled version of `OrderBot`, except that a preorder may have
 /// several bottom elements. When `α` is linear, this is useful to make a case disjunction on
 /// `NoMinOrder α` within a proof.
-#[allow(non_snake_case)]
 pub open spec fn IsBot<T: LE>(a: T) -> bool {
     forall|b: T| a.le(b)
 }
@@ -117,7 +116,6 @@ pub open spec fn IsBot<T: LE>(a: T) -> bool {
 /// This predicate is roughly an unbundled version of `OrderBot`, except that a preorder may have
 /// several top elements. When `α` is linear, this is useful to make a case disjunction on
 /// `NoMaxOrder α` within a proof.
-#[allow(non_snake_case)]
 pub open spec fn IsTop<T: LE>(a: T) -> bool {
     forall|b: T| b.le(a)
 }
@@ -125,7 +123,6 @@ pub open spec fn IsTop<T: LE>(a: T) -> bool {
 /// `a` is a minimal element of `α` if no element is strictly less than it. We spell it without `<`
 /// to avoid having to convert between `≤` and `<`. Instead, `isMin_iff_forall_not_lt` does the
 /// conversion.
-#[allow(non_snake_case)]
 pub open spec fn IsMin<T: LE>(a: T) -> bool {
     forall|b: T| b.le(a) ==> a.le(b)
 }
@@ -133,13 +130,11 @@ pub open spec fn IsMin<T: LE>(a: T) -> bool {
 /// `a` is a maximal element of `α` if no element is strictly greater than it. We spell it without
 /// `<` to avoid having to convert between `≤` and `<`. Instead, `isMax_iff_forall_not_lt` does the
 /// conversion.
-#[allow(non_snake_case)]
 pub open spec fn IsMax<T: LE>(a: T) -> bool {
     forall|b: T| a.le(b) ==> b.le(a)
 }
 
 /// IsTop i => (IsMax j <=> j = i)
-#[allow(non_snake_case)]
 proof fn lemma_IsTop_isMax_iff<T: PartialOrder>(i: T, j: T)
     requires
         IsTop(i),
@@ -158,7 +153,6 @@ proof fn lemma_IsTop_isMax_iff<T: PartialOrder>(i: T, j: T)
 
 /// IsBot i => (IsMin j <=> j = i)
 /// IsBot i ==> (IsMin j ↔ j = i)
-#[allow(non_snake_case)]
 proof fn lemma_IsBot_isMin_iff<T: PartialOrder>(i: T, j: T)
     requires
         IsBot(i),
@@ -177,7 +171,6 @@ proof fn lemma_IsBot_isMin_iff<T: PartialOrder>(i: T, j: T)
 }
 
 /// IsBot a => b ≤ a => IsBot b
-#[allow(non_snake_case)]
 proof fn lemma_IsBot_mono<T: PreOrder>(a: T, b: T)
     requires
         IsBot(a),
@@ -194,7 +187,6 @@ proof fn lemma_IsBot_mono<T: PreOrder>(a: T, b: T)
 }
 
 /// IsTop a => a ≤ b => IsTop b
-#[allow(non_snake_case)]
 proof fn lemma_IsTop_mono<T: PreOrder>(a: T, b: T)
     requires
         IsTop(a),
@@ -211,7 +203,6 @@ proof fn lemma_IsTop_mono<T: PreOrder>(a: T, b: T)
 }
 
 /// IsMin a => b ≤ a => IsMin b
-#[allow(non_snake_case)]
 proof fn lemma_IsMin_mono<T: PreOrder>(a: T, b: T)
     requires
         IsMin(a),
@@ -229,7 +220,6 @@ proof fn lemma_IsMin_mono<T: PreOrder>(a: T, b: T)
 }
 
 /// IsMax a => a ≤ b => IsMax b
-#[allow(non_snake_case)]
 proof fn lemma_IsMax_mono<T: PreOrder>(a: T, b: T)
     requires
         IsMax(a),
@@ -247,7 +237,6 @@ proof fn lemma_IsMax_mono<T: PreOrder>(a: T, b: T)
 }
 
 /// IsMin a <=> ∀ b, ¬(b < a)
-#[allow(non_snake_case)]
 proof fn lemma_isMin_iff_forall_not_lt<T: PreOrder>(a: T)
     ensures
         IsMin(a) <==> (forall|b: T| !b.lt(a)),
@@ -267,7 +256,6 @@ proof fn lemma_isMin_iff_forall_not_lt<T: PreOrder>(a: T)
 }
 
 /// IsMax a <=> ∀ b, ¬(a < b)
-#[allow(non_snake_case)]
 proof fn lemma_isMax_iff_forall_not_lt<T: PreOrder>(a: T)
     ensures
         IsMax(a) <==> (forall|b: T| !a.lt(b)),
@@ -287,7 +275,6 @@ proof fn lemma_isMax_iff_forall_not_lt<T: PreOrder>(a: T)
 }
 
 /// ¬IsMin a <=> ∃ b, b < a
-#[allow(non_snake_case)]
 proof fn lemma_not_isMin_iff<T: PreOrder>(a: T)
     ensures
         !IsMin(a) <==> (exists|b: T| b.lt(a)),
@@ -303,7 +290,6 @@ proof fn lemma_not_isMin_iff<T: PreOrder>(a: T)
 }
 
 /// ¬IsMax a ↔ ∃ b, a < b
-#[allow(non_snake_case)]
 proof fn lemma_not_isMax_iff<T: PreOrder>(a: T)
     ensures
         !IsMax(a) <==> (exists|b: T| a.lt(b)),
@@ -319,7 +305,6 @@ proof fn lemma_not_isMax_iff<T: PreOrder>(a: T)
 }
 
 /// [NoMinOrder α] => ¬IsMin a
-#[allow(non_snake_case)]
 proof fn lemma_not_isMin<T: PreOrder + NoMinOrder>(a: T)
     ensures
         !IsMin(a),
@@ -329,7 +314,6 @@ proof fn lemma_not_isMin<T: PreOrder + NoMinOrder>(a: T)
 }
 
 /// [NoMaxOrder α] => ¬IsMax a
-#[allow(non_snake_case)]
 proof fn lemma_not_isMax<T: PreOrder + NoMaxOrder>(a: T)
     ensures
         !IsMax(a),

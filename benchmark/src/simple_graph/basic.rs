@@ -110,7 +110,6 @@ impl<V> SimpleGraph<V> {
 
     /// Corresponds to Lean's `instance sSup : SupSet (SimpleGraph V)`
     /// Well-formedness can be automatically inferred by Verus.
-    #[allow(non_snake_case)]
     pub open spec fn sSup(s: Set<Self>) -> Self
         recommends
             s.all(|g: Self| g.wf()),
@@ -120,7 +119,6 @@ impl<V> SimpleGraph<V> {
 
     /// Corresponds to Lean's `instance sInf : InfSet (SimpleGraph V)`
     /// Well-formedness can be automatically inferred by Verus.
-    #[allow(non_snake_case)]
     pub open spec fn sInf(s: Set<Self>) -> Self
         recommends
             s.all(|g: Self| g.wf()),

@@ -52,7 +52,6 @@ verus! {
 pub trait CompleteSemilatticeSup: PartialOrder + SupSet where Self: Sized {
     /// Any element of a set is less than the set supremum.
     /// ∀ s, ∀ a ∈ s, a ≤ sSup s
-    #[allow(non_snake_case)]
     proof fn lemma_le_sSup()
         ensures
             forall|s: Set<Self>| s.all(|a: Self| a.le(#[trigger] Self::sSup(s))),
@@ -60,7 +59,6 @@ pub trait CompleteSemilatticeSup: PartialOrder + SupSet where Self: Sized {
 
     /// Any upper bound is more than the set supremum.
     /// ∀ s a, (∀ b ∈ s, b ≤ a) => sSup s ≤ a
-    #[allow(non_snake_case)]
     proof fn lemma_sSup_le()
         ensures
             forall|s: Set<Self>, a: Self|
@@ -68,7 +66,6 @@ pub trait CompleteSemilatticeSup: PartialOrder + SupSet where Self: Sized {
     ;
 
     /// b ∈ s => a ≤ b => a ≤ sSup s
-    #[allow(non_snake_case)]
     proof fn lemma_le_sSup_of_le(s: Set<Self>, a: Self, b: Self)
         requires
             s.contains(b),
@@ -85,7 +82,6 @@ pub trait CompleteSemilatticeSup: PartialOrder + SupSet where Self: Sized {
     }
 
     /// sSup s ≤ a <=> ∀ b ∈ s, b ≤ a
-    #[allow(non_snake_case)]
     proof fn lemma_sSup_le_iff(s: Set<Self>, a: Self)
         ensures
             Self::sSup(s).le(a) <==> s.all(|b: Self| b.le(a)),
@@ -106,7 +102,6 @@ pub trait CompleteSemilatticeSup: PartialOrder + SupSet where Self: Sized {
     }
 
     /// a ≤ sSup s <=> ∀ b ∈ upperBounds s, a ≤ b
-    #[allow(non_snake_case)]
     proof fn lemma_le_sSup_iff(s: Set<Self>, a: Self)
         ensures
             a.le(Self::sSup(s)) <==> upperBounds(s).all(|b: Self| a.le(b)),
@@ -128,7 +123,6 @@ pub trait CompleteSemilatticeSup: PartialOrder + SupSet where Self: Sized {
     }
 
     /// a ≤ (⨆ i, s(i)) <=> (∀ b, (∀ i, s(i) ≤ b) => a ≤ b)
-    #[allow(non_snake_case)]
     proof fn lemma_le_iSup_iff<I>(s: spec_fn(I) -> Self, a: Self)
         ensures
             a.le(iSup(s)) <==> (forall|b: Self| (forall|i: I| #[trigger] s(i).le(b)) ==> a.le(b)),
@@ -160,7 +154,6 @@ pub trait CompleteSemilatticeSup: PartialOrder + SupSet where Self: Sized {
 pub trait CompleteSemilatticeInf: PartialOrder + InfSet where Self: Sized {
     /// Any element of a set is more than the set infimum.
     /// ∀ s, ∀ a ∈ s, sInf s ≤ a
-    #[allow(non_snake_case)]
     proof fn lemma_sInf_le()
         ensures
             forall|s: Set<Self>| s.all(|a: Self| (#[trigger] Self::sInf(s)).le(a)),
@@ -168,7 +161,6 @@ pub trait CompleteSemilatticeInf: PartialOrder + InfSet where Self: Sized {
 
     /// Any lower bound is less than the set infimum.
     /// ∀ s a, (∀ b ∈ s, a ≤ b) => a ≤ sInf s
-    #[allow(non_snake_case)]
     proof fn lemma_le_sInf()
         ensures
             forall|s: Set<Self>, a: Self|
@@ -176,7 +168,6 @@ pub trait CompleteSemilatticeInf: PartialOrder + InfSet where Self: Sized {
     ;
 
     /// IsGLB s a <=> sInf s = a
-    #[allow(non_snake_case)]
     proof fn lemma_isGLB_iff_sInf_eq(s: Set<Self>, a: Self)
         ensures
             IsGLB(s, a) <==> (Self::sInf(s) == a),
@@ -203,7 +194,6 @@ pub trait CompleteSemilatticeInf: PartialOrder + InfSet where Self: Sized {
     }
 
     /// sInf s ≤ a <=> ∀ b ∈ lowerBounds s, b ≤ a
-    #[allow(non_snake_case)]
     proof fn lemma_sInf_le_iff(s: Set<Self>, a: Self)
         ensures
             Self::sInf(s).le(a) <==> lowerBounds(s).all(|b: Self| b.le(a)),
@@ -227,7 +217,6 @@ pub trait CompleteSemilatticeInf: PartialOrder + InfSet where Self: Sized {
     }
 
     /// (⨅ i, s(i)) ≤ a <=> (∀ b, (∀ i, b ≤ s(i)) => b ≤ a)
-    #[allow(non_snake_case)]
     proof fn lemma_iInf_le_iff<I>(s: spec_fn(I) -> Self, a: Self)
         ensures
             iInf(s).le(a) <==> (forall|b: Self| (forall|i: I| #[trigger] b.le(s(i))) ==> b.le(a)),
