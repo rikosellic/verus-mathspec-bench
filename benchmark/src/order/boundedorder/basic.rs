@@ -1,10 +1,14 @@
-/*
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
-*/
-// Mathlib/Order/BoundedOrder/Basic.lean
-// Translated to Verus by: Xinyi Wan, 2025.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+// Released under the Apache License, Version 2.0 as described in the file LICENSE.
+// Authors: Johannes Hölzl
+//
+// Copyright (c) 2025 Xinyi Wan. All rights reserved.
+//
+// This file is a Verus transcription of Mathlib/Order/BoundedOrder/Basic.lean originally written in Lean 4,
+// with adaptations and modifications by Xinyi Wan (2025).
+// Source: https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/Order/BoundedOrder/Basic.lean
 use crate::order::{defs::partialorder::*, notation::*};
 use vstd::prelude::*;
 

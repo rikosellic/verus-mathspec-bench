@@ -1,10 +1,14 @@
-/*
-Copyright (c) 2016 Microsoft Corporation. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Leonardo de Moura
-*/
-// mathlib4/Mathlib/Order/Defs/PartialOrder.lean
-// Translated to Verus by: Xinyi Wan, 2025.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright (c) 2016 Microsoft Corporation. All rights reserved.
+// Released under the Apache License, Version 2.0 as described in the file LICENSE.
+// Authors: Leonardo de Moura
+//
+// Copyright (c) 2025 Xinyi Wan. All rights reserved.
+//
+// This file is a Verus transcription of mathlib4/Mathlib/Order/Defs/PartialOrder.lean originally written in Lean 4,
+// with adaptations and modifications by Xinyi Wan (2025).
+// Source: https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/Order/Defs/PartialOrder.lean
 use vstd::prelude::*;
 
 verus! {

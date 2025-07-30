@@ -1,10 +1,14 @@
-/*
-Copyright (c) 2014 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Yury Kudryashov, Yaël Dillies
-*/
-// Mathlib/Order/Max.lean
-// Translated to Verus by: Xinyi Wan, 2025.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright (c) 2014 Jeremy Avigad. All rights reserved.
+// Released under the Apache License, Version 2.0 as described in the file LICENSE.
+// Authors: Jeremy Avigad, Yury Kudryashov, Yaël Dillies
+//
+// Copyright (c) 2025 Xinyi Wan. All rights reserved.
+//
+// This file is a Verus transcription of Mathlib/Order/Max.lean originally written in Lean 4,
+// with adaptations and modifications by Xinyi Wan (2025).
+// Source: https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/Order/Max.lean
 use crate::order::defs::partialorder::*;
 use vstd::prelude::*;
 

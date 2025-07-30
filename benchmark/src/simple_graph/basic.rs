@@ -1,10 +1,14 @@
-/*
-Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
-*/
-// Mathlib/Combinatorics/SimpleGraph/Basic.lean
-// Translated to Verus by: Xinyi Wan, 2025.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved.
+// Released under the Apache License, Version 2.0 as described in the file LICENSE.
+// Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
+//
+// Copyright (c) 2025 Xinyi Wan. All rights reserved.
+//
+// This file is a Verus transcription of Mathlib/Combinatorics/SimpleGraph/Basic.lean originally written in Lean 4,
+// with adaptations and modifications by Xinyi Wan (2025).
+// Source: https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/Combinatorics/SimpleGraph/Basic.lean
 use vstd::{
     prelude::*,
     relations::{irreflexive, symmetric},
