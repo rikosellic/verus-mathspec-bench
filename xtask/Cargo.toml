@@ -13,3 +13,5 @@ git2 = { version = "*" }
 cargo_toml = { version = "*" }
 lazy_static = { version = "*" }
 walkdir = "2"
+owo-colors = { version = "*", features = ["supports-colors"] }
+rayon = "*"
