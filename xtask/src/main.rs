@@ -24,7 +24,7 @@ use std::{
 };
 use walkdir::WalkDir;
 
-static VERUS_REPO: &str = "https://github.com/asterinas/verus.git";
+static VERUS_REPO: &str = "https://github.com/verus-lang/verus.git";
 
 fn get_platform_specific_binary_name(base_name: &str) -> String {
     #[cfg(target_os = "windows")]
@@ -313,7 +313,7 @@ struct BootstrapArgs {
     restart: bool,
 
     #[arg(long = "rust-version", help = "The rust version to use",
-        default_value = "1.88.0", action = ArgAction::Set)]
+        default_value = "main", action = ArgAction::Set)]
     rust_version: String,
 }
 
@@ -324,7 +324,7 @@ struct UpdateArgs {
     no_verus: bool,
 
     #[arg(long = "rust-version", help = "The rust version to use",
-        default_value = "1.88.0", action = ArgAction::Set)]
+        default_value = "main", action = ArgAction::Set)]
     rust_version: String,
 
     #[arg(long = "test", help = "Use the test branch of Verus",
