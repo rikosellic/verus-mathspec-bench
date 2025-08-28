@@ -1,5 +1,5 @@
 # .github/workflows/xtask-fmt.yml
-name: Format and Verify VOSTD Code
+name: Format and Verify Verus-Graph-Bench Code
 
 on:
   push:
