@@ -10,16 +10,12 @@ Moreover, all mathematical concepts are interconnected through traits, forming a
 
 If you have not installed Rust yet, follow the [official instructions](https://www.rust-lang.org/tools/install).
 
-#### Build Verus
+#### Install Verus
 
-You can build Verus with the following command:
-```bash
-cargo xtask bootstrap
-```
-Verus should be automatically cloned and built in the `tools` directory. If download fails, please clone the repo manually into `tools/verus` , then run `cargo xtask bootstrap` again.
+You can install Verus by following the instructions in the [Verus repository](https://github.com/verus-lang/verus/blob/main/INSTALL.md). Then make sure to add the directory containing the `verus` binary to your `PATH`. (If you download a binary release, it is exactly that directory; if you build from source, it is the `source/target-verus/release` directory inside the Verus repository.)
 
 #### Build Verification Targets 
 
 ```bash
-cargo xtask verify
+cargo verus verify
 ```
