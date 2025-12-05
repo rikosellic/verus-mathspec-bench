@@ -1,6 +1,6 @@
-# Verus Graph Benchmark
+# Verus MathSpec Benchmark
 
-This repository contains a collection of Verus proof tasks in graph theory, translated from Lean 4. Unlike typical Verus benchmarks, these tasks focus purely on mathematical specifications, emphasizing the model's ability to infer and reason over abstract concepts.
+This repository contains a collection of Verus proof tasks in mathematical theories, translated from the [math library](https://github.com/leanprover-community/mathlib4) of Lean 4. Unlike typical Verus benchmarks, these tasks focus purely on mathematical specifications, emphasizing the model's ability to infer and reason over abstract concepts.
 
 Moreover, all mathematical concepts are interconnected through traits, forming a coherent and interdependent specification space. As a result, this benchmark goes beyond isolated tasks — any automated reasoning tool must analyze and extract knowledge at the repository level to perform well.
 
