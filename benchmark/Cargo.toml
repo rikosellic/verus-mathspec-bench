@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-vstd = { git = "https://github.com/verus-lang/verus", branch = "main" }
+vstd = { git = "https://github.com/verus-lang/verus", rev = "493c740b91621595b11e62fc80808de1cf0312ba" }
 
 [package.metadata.verus]
 verify = true
