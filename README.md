@@ -15,7 +15,7 @@ If you have not installed Rust yet, follow the [official instructions](https://w
 You can install Verus by following the instructions in the [Verus repository](https://github.com/verus-lang/verus/blob/main/INSTALL.md). Then make sure to add the directory containing the `verus` binary to your `PATH`. (If you download a binary release, it is exactly that directory; if you build from source, it is the `source/target-verus/release` directory inside the Verus repository.)
 
 > [!NOTE]
-> We run the verification with verus-0.2026.05.17.e479cce
+> We run the verification with [verus-0.2026.05.17.e479cce](https://github.com/verus-lang/verus/releases/tag/release%2F0.2026.05.17.e479cce)
 
 #### Build Verification Targets 
 
